@@ -8,11 +8,23 @@
     <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.1/jquery-ui.min.js"></script>
     <script src='http://cdn.buglabs.net/swarm/swarm-v0.4.0.min.js'></script>
     <script src='widget.js'></script>
+    <script>
+		SWARM.connect({apikey: '7a849e6548dbd6f8034bb7cc1a37caa0b1a2654b',
+			           resource: 'eb81af58239ac15f07f3643688069190145e852f',
+			           swarms: ['156161a2b25b9d6d38b39e41d3c4ebabc59cb5c7'] });
+		$(document).ready(function() {
+			var widget = $('div#widget').bugdisplay_text({
+			    swarm: SWARM,
+			    resource: '55acc001d002e95de4c0885320efd4d52f0da95a',
+			    feed: 'Light'
+			});
+		});
+    </script>
   </head>
 
   <body>
+  	Light Data:
   	<div id=widget></div>
-  	<script src='test.js'></script>
   </body>
 
 </html>

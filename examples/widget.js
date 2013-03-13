@@ -14,9 +14,10 @@
 	var options = {
 		swarm: false,					//swarm session object (SWARM)
 		resource: false,				//Resource to follow
-		width: 120,						//width in pixels
+		width: 20,						//width in pixels
 		printWholePayload: false,		//print whole payload, or only a feed?
-		feed: 'value',					//if notWholePayload, what feed?
+		feed: false,					//What feed should we display?
+		debug: true,					//print debug messages to console
 		value: 0
 	};
 
@@ -24,7 +25,8 @@
 		console.log('['+namespace+']: '+message);
 	};
 	var debug = function(message) {
-		console.log('['+namespace+']: '+message);
+		if (options.debug)
+			console.log('['+namespace+']: '+message);
 	};
 
 	//Invoked when widget is first attached to an element
@@ -36,22 +38,38 @@
 		var opts = my.options;
 
 		//Check for mandatory options
-		if (!(my.swarm && opts.resource)) {
-			info(
-				'ERR: must specify swarm and resource when creating widget');
+		if (!my.options.swarm) {
+			info('ERR: must specify swarm creating widget');
 		}
-		my.element = el.append('<span id=data></span>')
-						.attr('width', my.options.width)
-						.children(":first");
+		my.element = el.append('<span id=data width='+my.options.width+
+						'></span>').children(":first");
 		el.show();
+	};
+
+	onSwarmMessage = function(message) {
+		var payload  = message.payload;
+		if (my.options.resource && 
+			(message.from.resource !== my.options.resource)) {
+			return;
+		}
+		if (my.options.printWholePayload){
+			update(JSON.stringify(payload));
+		} else {
+			if (!('feed' in payload)) { return; }
+			if (!my.options.feed){
+				update(JSON.stringify(payload));
+			} else if (payload.name === my.options.feed) {
+				update(JSON.stringify(payload.feed));
+			}
+		}
 	};
 
 	//called after _create, every time widget is re-initialized
 	//more complex initialization
 	var init = function() {
 		debug('init');
-
 		update('Waiting for data...');
+		my.options.swarm.options.onmessage = onSwarmMessage;
 	};
 
 	//Called when widget is detached from element
@@ -60,12 +78,13 @@
 		debug('destroy');
 	};
 
+	//Only update the value of this widget, avoid a full redraw.
 	var update = function(data) {
-		debug('update');
+		debug('update: '+data);
 		if (data !== undefined) {
 			my.options.value = data;
 		}
-		my.element.html(my.options.value);
+		my.element.html(data);
 	};
 
 	//Called when a user changes an option, after the variable has been set.
