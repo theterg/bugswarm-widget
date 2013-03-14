@@ -14,7 +14,6 @@
 	var options = {
 		swarm: false,					//swarm session object (SWARM)
 		resource: false,				//Resource to follow
-		width: 20,						//width in pixels
 		printWholePayload: false,		//print whole payload, or only a feed?
 		feed: false,					//What feed should we display?
 		debug: true,					//print debug messages to console
@@ -22,18 +21,18 @@
 	};
 
 	var info = function(message) {
-		console.log('['+namespace+']: '+message);
+		console.log('['+my.eventNamespace+']: '+message);
 	};
 	var debug = function(message) {
 		if (options.debug)
-			console.log('['+namespace+']: '+message);
+			console.log('['+my.eventNamespace+']: '+message);
 	};
 
 	//Invoked when widget is first attached to an element
 	//add classes, store references, create elements, initialize other widgets
 	var create = function() {
-		debug('create');
 		my = this;						//Assign this widget's scope to 'my'
+		debug('create');
 		var el = my.element.hide();
 		var opts = my.options;
 
@@ -41,12 +40,15 @@
 		if (!my.options.swarm) {
 			info('ERR: must specify swarm creating widget');
 		}
-		my.element = el.append('<span id=data width='+my.options.width+
-						'></span>').children(":first");
+		my.element = el.append('<span id=data></span>')
+						.children(":first");
 		el.show();
 	};
 
-	onSwarmMessage = function(message) {
+	var onSwarmMessage = function(message) {
+		//The 'my' context should have been set on this callback...
+		var my = this;
+		//debug(my.options.feed);
 		var payload  = message.payload;
 		if (my.options.resource && 
 			(message.from.resource !== my.options.resource)) {
@@ -59,7 +61,9 @@
 			if (!my.options.feed){
 				update(JSON.stringify(payload));
 			} else if (payload.name === my.options.feed) {
-				update(JSON.stringify(payload.feed));
+				//console.log(my);
+				update.apply(my, [JSON.stringify(payload.feed)]);
+				//update(JSON.stringify(payload.feed));
 			}
 		}
 	};
@@ -69,7 +73,7 @@
 	var init = function() {
 		debug('init');
 		update('Waiting for data...');
-		my.options.swarm.options.onmessage = onSwarmMessage;
+		my.options.swarm.addListener('message', onSwarmMessage, my);
 	};
 
 	//Called when widget is detached from element
@@ -80,6 +84,10 @@
 
 	//Only update the value of this widget, avoid a full redraw.
 	var update = function(data) {
+		//console.log(this);
+		if (this !== window){
+			my = this;
+		}
 		debug('update: '+data);
 		if (data !== undefined) {
 			my.options.value = data;

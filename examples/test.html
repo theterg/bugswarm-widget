@@ -6,25 +6,32 @@
     <title>BUGswarm Widget Test</title>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" ></script>
     <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.1/jquery-ui.min.js"></script>
-    <script src='http://cdn.buglabs.net/swarm/swarm-v0.4.0.min.js'></script>
+    <script src='http://s3.amazonaws.com/buglabs/swarm/swarm-v0.4.1.js'></script>
     <script src='widget.js'></script>
     <script>
 		SWARM.connect({apikey: '7a849e6548dbd6f8034bb7cc1a37caa0b1a2654b',
 			           resource: 'eb81af58239ac15f07f3643688069190145e852f',
 			           swarms: ['156161a2b25b9d6d38b39e41d3c4ebabc59cb5c7'] });
+		var opts = { swarm: SWARM,
+					 resource: '55acc001d002e95de4c0885320efd4d52f0da95a' };
 		$(document).ready(function() {
-			var widget = $('div#widget').bugdisplay_text({
-			    swarm: SWARM,
-			    resource: '55acc001d002e95de4c0885320efd4d52f0da95a',
-			    feed: 'Light'
-			});
+			opts.feed = 'Light';
+			$('span#light').bugdisplay_text(opts);
+			opts.feed = 'Temperature';
+			$('span#temp').bugdisplay_text(opts);
+			opts.feed = 'Button';
+			$('span#button').bugdisplay_text(opts);
+			opts.feed = 'Potentiometer';
+			$('span#pot').bugdisplay_text(opts);
 		});
     </script>
   </head>
 
   <body>
-  	Light Data:
-  	<div id=widget></div>
+  	Light Data: <span id=light></span></br>
+  	Temperature Data: <span id=temp></span></br>
+  	Button Data: <span id=button></span></br>
+	Potentiometer Data: <span id=pot></span></br>
   </body>
 
 </html>
