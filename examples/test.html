@@ -6,9 +6,11 @@
     <title>BUGswarm Widget Test</title>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" ></script>
     <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.1/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="http://www.flotcharts.org/flot/jquery.flot.js"></script>
     <script src='http://s3.amazonaws.com/buglabs/swarm/swarm-v0.4.1.js'></script>
     <script src='SwarmFeedMap.js'></script>
     <script src='swarmField.js'></script>
+    <script src='swarmChart.js'></script>
     <script>
 		SWARM.connect({apikey: '7a849e6548dbd6f8034bb7cc1a37caa0b1a2654b',
 			           resource: 'eb81af58239ac15f07f3643688069190145e852f',
@@ -24,6 +26,8 @@
 			$('span#button').swarmField(opts);
 			opts.feed = 'Potentiometer';
 			$('span#pot').swarmField(opts);
+			opts.feed = 'Acceleration';
+			$('div#accel').swarmChart(opts);
 		});
     </script>
   </head>
@@ -33,6 +37,8 @@
   	Temperature Data: <span id=temp></span></br>
   	Button Data: <span id=button></span></br>
 	Potentiometer Data: <span id=pot></span></br>
+	Accel Data: </br>
+  	<div id=accel></div></br>
   </body>
 
 </html>
