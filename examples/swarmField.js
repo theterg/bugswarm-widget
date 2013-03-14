@@ -3,7 +3,7 @@
 (function($, undefined) {
 
 	//name of the Widget namespace within jQuery.
-	var namespace = 'bug.bugdisplay_text';
+	var namespace = 'bug.swarmField';
 
 	//an object representing this widget's instance scope
 	//this is copied from the widget's scope on create

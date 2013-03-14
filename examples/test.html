@@ -8,7 +8,7 @@
     <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.1/jquery-ui.min.js"></script>
     <script src='http://s3.amazonaws.com/buglabs/swarm/swarm-v0.4.1.js'></script>
     <script src='SwarmFeedMap.js'></script>
-    <script src='widget.js'></script>
+    <script src='swarmField.js'></script>
     <script>
 		SWARM.connect({apikey: '7a849e6548dbd6f8034bb7cc1a37caa0b1a2654b',
 			           resource: 'eb81af58239ac15f07f3643688069190145e852f',
@@ -17,13 +17,13 @@
 					 resource: '55acc001d002e95de4c0885320efd4d52f0da95a' };
 		$(document).ready(function() {
 			opts.feed = 'Light';
-			$('span#light').bugdisplay_text(opts);
+			$('span#light').swarmField(opts);
 			opts.feed = 'Temperature';
-			$('span#temp').bugdisplay_text(opts);
+			$('span#temp').swarmField(opts);
 			opts.feed = 'Button';
-			$('span#button').bugdisplay_text(opts);
+			$('span#button').swarmField(opts);
 			opts.feed = 'Potentiometer';
-			$('span#pot').bugdisplay_text(opts);
+			$('span#pot').swarmField(opts);
 		});
     </script>
   </head>
