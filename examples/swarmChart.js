@@ -113,7 +113,6 @@
 		my.accelX.push([(currentTime - my.startTime)/1000, data.x]);
 		my.accelY.push([(currentTime - my.startTime)/1000, data.y]);
 		my.accelZ.push([(currentTime - my.startTime)/1000, data.z]);
-		debug('plotlen: '+my.accelX.length);
 		if (my.accelX.length > my.options.plotlen){
             my.accelX.shift();
             my.accelY.shift();
