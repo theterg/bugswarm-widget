@@ -15,7 +15,9 @@
 		swarm: false,					//swarm session object (SWARM)
 		resource: false,				//Resource to follow
 		printWholePayload: false,		//print whole payload, or only a feed?
-		feed: false,					//What feed should we display?
+		feed: false,					//What service should we display?
+		feedVars: false,				//What variables exist in feed?
+		units: '',						//What are the units of the feed?
 		debug: true,					//print debug messages to console
 		value: 0
 	};
@@ -40,6 +42,11 @@
 		if (!my.options.swarm) {
 			info('ERR: must specify swarm creating widget');
 		}
+		if (opts.feed && !opts.feedVars && 
+						SwarmFeedMap[opts.feed] !== undefined) {
+			opts.feedVars = SwarmFeedMap[opts.feed].values;
+			opts.units = SwarmFeedMap[opts.feed].units;
+		}
 		my.element = el.append('<span id=data></span>')
 						.children(":first");
 		el.show();
@@ -58,12 +65,21 @@
 			update(JSON.stringify(payload));
 		} else {
 			if (!('feed' in payload)) { return; }
+			//If no feed at all was defined, display any feed data.
 			if (!my.options.feed){
-				update(JSON.stringify(payload));
+				update(JSON.stringify(payload.feed));
 			} else if (payload.name === my.options.feed) {
-				//console.log(my);
-				update.apply(my, [JSON.stringify(payload.feed)]);
+				//if we don't know the structure of the feed, display whole feed
+				if (!my.options.feedVars || my.options.feedVars.length > 1) {
+					update.apply(my, [JSON.stringify(payload.feed)]);
+				//feedVars should be known, and of length 1
+				} else {
+					update.apply(my, [payload.feed[my.options.feedVars[0]]+
+											' '+my.options.units]);
+				} 
+					
 				//update(JSON.stringify(payload.feed));
+				//update.apply(my, [JSON.stringify(payload.feed[my.options.feed])]);
 			}
 		}
 	};
