@@ -20,10 +20,11 @@
 		value: 0,
 		width: 450,
 		height: 250,
+		mapLibSrc: "http://maps.googleapis.com/maps/api/js?sensor=false&callback=googlemapinit",
+		startLat: 40.72493,
+		startLon: -73.996562,
 		map: {
-            zoom: 16,
-            center: new google.maps.LatLng(40.83540424337388,-73.9438092675781),
-            mapTypeId: google.maps.MapTypeId.ROADMAP
+            zoom: 16
 		}
 	};
 
@@ -40,7 +41,7 @@
 	var create = function() {
 		my = this;						//Assign this widget's scope to 'my'
 		debug('create');
-		var el = my.element.hide();
+		var el = my.element;
 		var opts = my.options;
 
 		//Check for mandatory options
@@ -52,7 +53,23 @@
 			opts.feedVars = SwarmFeedMap[opts.feed].values;
 		}
 		$(el).width(my.options.width).height(my.options.height);
+		$(el).css('width',my.options.width).css('height',my.options.height);
 		$(el).html('loading...');
+		if (window.google === undefined) {
+			debug('Google maps library not found, loading...');
+			var script = document.createElement("script");
+			script.type = "text/javascript";
+			script.src = opts.mapLibSrc;
+			document.body.appendChild(script);
+		}
+	};
+
+	window.googlemapinit = function() {
+		debug('...Google maps loaded, re-initializing widgets.');
+		var widgets = $( ':data(bug-swarmMap)' );
+		$(':data(bug-swarmMap)').each(function(index, value) {
+			$(value).swarmMap();
+		});
 	};
 
 	var onSwarmMessage = function(message) {
@@ -74,15 +91,21 @@
 	//called after _create, every time widget is re-initialized
 	//more complex initialization
 	var init = function() {
+		if (!((window.google !== undefined) &&
+				(window.google.maps !== undefined))) {
+			debug('google libraries missing, not initializing');
+			return;
+		} 
 		debug('init');
-		//Dynamically load plot libraries?
 		my.element.html('');
+		my.options.map.center = new google.maps.LatLng(
+								my.options.startLat, my.options.startLon);
+		my.options.map.mapTypeId = google.maps.MapTypeId.ROADMAP;
 		my.map = new google.maps.Map(my.element.get(0), my.options.map);
 		my.marker = new google.maps.Marker({
 			position: my.options.map.center, 
 			map: my.map });
 		my.options.swarm.addListener('message', onSwarmMessage, my);
-		my.element.show();
 	};
 
 	//Called when widget is detached from element

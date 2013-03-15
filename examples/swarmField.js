@@ -42,7 +42,7 @@
 		if (!my.options.swarm) {
 			info('ERR: must specify swarm creating widget');
 		}
-		if (opts.feed && !opts.feedVars && 
+		if (opts.feed && !opts.feedVars &&
 						SwarmFeedMap[opts.feed] !== undefined) {
 			opts.feedVars = SwarmFeedMap[opts.feed].values;
 			opts.units = SwarmFeedMap[opts.feed].units;
