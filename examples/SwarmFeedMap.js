@@ -6,6 +6,7 @@ var SwarmFeedMap = {
 		max: 1.5
 	},
 	'Location': {
+		//Should be lat first, long second
 		values: ['latitude','longitude'],
 		units: '\u00B0'
 	},

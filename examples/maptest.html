@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+
+  <head>
+    <title>BUGswarm Widget Test</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" ></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.1/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="http://www.flotcharts.org/flot/jquery.flot.js"></script>
+    <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+    <script src='http://s3.amazonaws.com/buglabs/swarm/swarm-v0.4.1.js'></script>
+    <script src='SwarmFeedMap.js'></script>
+    <script src='swarmField.js'></script>
+    <script src='swarmChart.js'></script>
+    <script src='swarmMap.js'></script>
+    <script>
+		SWARM.connect({apikey: '7a849e6548dbd6f8034bb7cc1a37caa0b1a2654b',
+			           resource: 'eb81af58239ac15f07f3643688069190145e852f',
+			           swarms: ['156161a2b25b9d6d38b39e41d3c4ebabc59cb5c7'] });
+		$(document).ready(function() {
+			$('span#temp').swarmField({ swarm: SWARM,
+					 resource: '99c891f4c9115fbfadaa99f868bc0bc4329ed27f',
+					 feed: 'Temperature',
+					 feedVars: ['Temperature'],
+					 units: '\u00B0C' });
+			$('div#accel').swarmChart({ swarm: SWARM,
+					 resource: '99c891f4c9115fbfadaa99f868bc0bc4329ed27f',
+					 feed: 'Acceleration' });
+			$('span#loc').swarmField({ swarm: SWARM,
+					 resource: '99c891f4c9115fbfadaa99f868bc0bc4329ed27f',
+					 feed: 'Location' });
+			$('div#map').swarmMap({ swarm: SWARM,
+					 resource: '99c891f4c9115fbfadaa99f868bc0bc4329ed27f',
+					 feed: 'Location' });
+		});
+    </script>
+  </head>
+
+  <body>
+  	Temperature Data: <span id=temp></span></br>
+	Accel Data: </br>
+  	<div id=accel></div></br>
+  	Raw Location Data: <span id=loc></span></br>
+  	Map: </br>
+  	<div id=map></div></br>
+  </body>
+
+</html>
