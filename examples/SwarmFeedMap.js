@@ -1,7 +1,9 @@
 var SwarmFeedMap = {
 	'Acceleration': {
 		values: ['x', 'y', 'z'],
-		units: 'G'
+		units: 'G',
+		min: -1.5,
+		max: 1.5
 	},
 	'Location': {
 		values: ['latitude','longitude'],
@@ -9,15 +11,21 @@ var SwarmFeedMap = {
 	},
 	'Temperature': {
 		values: ['TempF'],
-		units: '\u00B0F'
+		units: '\u00B0F',
+		min:-10,
+		max:110
 	},
 	'Light': {
 		values: ['Value'],
-		units: 'Lux'
+		units: 'Lux',
+		min:0,
+		max:1024
 	},
 	'Potentiometer': {
 		values: ['Raw'],
-		units: ''
+		units: '',
+		min:0,
+		max:1024
 	},
 	'Button': {
 		values: ['b1','b2','b3'],

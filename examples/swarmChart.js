@@ -14,20 +14,19 @@
 	var options = {
 		swarm: false,					//swarm session object (SWARM)
 		resource: false,				//Resource to follow
-		printWholePayload: false,		//print whole payload, or only a feed?
 		feed: false,					//What feed should we display?
+		feedVars: false,				//What variables exist in feed?
 		debug: true,					//print debug messages to console
 		value: 0,
 		width: 450,
 		height: 250,
 		plotlen: 100,
+		numaxes: 1,
 		chart: {
 				series: { shadowSize: 0 }, // drawing is faster without shadows
 				grid: { color: "#FFF" },
 				legend: { backgroundColor: "#5C5D60" },
-				yaxis: { position: "left",
-					min: -1.5,
-					max: 1.5 }
+				yaxis: { position: "left"}
 			}
 	};
 
@@ -51,13 +50,19 @@
 		if (!my.options.swarm) {
 			info('ERR: must specify swarm creating widget');
 		}
+		if (opts.feed && !opts.feedVars &&
+						SwarmFeedMap[opts.feed] !== undefined) {
+			opts.feedVars = SwarmFeedMap[opts.feed].values;
+			opts.numaxes = opts.feedVars.length;
+			opts.chart.yaxis.max = SwarmFeedMap[opts.feed].max;
+			opts.chart.yaxis.min = SwarmFeedMap[opts.feed].min;
+		}
 		$(el).css('width',my.options.width).css('height',my.options.height);
-		my.accelX = [];
-		my.accelY = [];
-		my.accelZ = [];
-		my.plot = $.plot(el,
-			[my.accelX, my.accelY, my.accelZ],
-			my.options.chart);
+		$(el).html('loading...');
+		my.data = [];
+		for (var i=0;i<opts.numaxes;i++) {
+			my.data.push([]);
+		}
 	};
 
 	var onSwarmMessage = function(message) {
@@ -65,21 +70,14 @@
 		var my = this;
 		//debug(my.options.feed);
 		var payload  = message.payload;
-		if (my.options.resource && 
+		if (my.options.resource &&
 			(message.from.resource !== my.options.resource)) {
 			return;
 		}
-		if (my.options.printWholePayload){
-			update(JSON.stringify(payload));
-		} else {
-			if (!('feed' in payload)) { return; }
-			if (!my.options.feed){
-				update(JSON.stringify(payload));
-			} else if (payload.name === my.options.feed) {
-				//console.log(my);
-				update.apply(my, [payload.feed]);
-				//update(JSON.stringify(payload.feed));
-			}
+		if (!('feed' in payload)) { return; }
+		//If no feed at all was defined, display any feed data.
+		if (payload.name === my.options.feed) {
+			update(payload.feed);
 		}
 	};
 
@@ -87,7 +85,9 @@
 	//more complex initialization
 	var init = function() {
 		debug('init');
-		update('Waiting for data...');
+		//Dynamically load plot libraries?
+		my.element.html('');
+		my.plot = $.plot(my.element, my.data, my.options.chart);
 		my.options.swarm.addListener('message', onSwarmMessage, my);
 		my.element.show();
 		my.startTime = (new Date()).getTime();
@@ -102,7 +102,7 @@
 	//Only update the value of this widget, avoid a full redraw.
 	var update = function(data) {
 		debug('update '+JSON.stringify(data));
-		//console.log(this);
+		//console.log(data);
 		if (this !== window){
 			my = this;
 		}
@@ -110,17 +110,29 @@
 			my.options.value = data;
 		}
 		var currentTime = (new Date()).getTime();
-		my.accelX.push([(currentTime - my.startTime)/1000, data.x]);
-		my.accelY.push([(currentTime - my.startTime)/1000, data.y]);
-		my.accelZ.push([(currentTime - my.startTime)/1000, data.z]);
-		if (my.accelX.length > my.options.plotlen){
-            my.accelX.shift();
-            my.accelY.shift();
-            my.accelZ.shift();
-        }
-		my.plot = $.plot(my.element,
-			[my.accelX, my.accelY, my.accelZ],
-			my.options.chart);
+		if (my.options.feedVars !== undefined) {
+			for (var i in my.options.feedVars) {
+				var value = my.options.feedVars[i];
+				my.data[i].push(
+					[(currentTime - my.startTime)/1000, data[value]]);
+				if (my.data[i].length > my.options.plotlen) {
+					my.data[i].shift();
+				}
+			}
+		} else {
+			var j = 0;
+			for (var prop in data) {
+				if (my.data[j] === undefined) {
+					my.data[j] = [];
+				}
+				my.data[j].push([(currentTime - my.startTime)/1000, prop]);
+				if (my.data[j].length > my.options.plotlen) {
+					my.data[j].shift();
+				}
+				j++;
+			}
+		}
+		my.plot = $.plot(my.element, my.data, my.options.chart);
 	};
 
 	//Called when a user changes an option, after the variable has been set.
