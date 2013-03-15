@@ -67,7 +67,7 @@
 			if (!('feed' in payload)) { return; }
 			//If no feed at all was defined, display any feed data.
 			if (!my.options.feed){
-				update(JSON.stringify(payload.feed));
+				update.apply(my, [JSON.stringify(payload.feed)]);
 			} else if (payload.name === my.options.feed) {
 				//if we don't know the structure of the feed, display whole feed
 				if (!my.options.feedVars || my.options.feedVars.length > 1) {

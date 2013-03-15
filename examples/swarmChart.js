@@ -77,7 +77,7 @@
 		if (!('feed' in payload)) { return; }
 		//If no feed at all was defined, display any feed data.
 		if (payload.name === my.options.feed) {
-			update(payload.feed);
+			update.apply(my, [payload.feed]);
 		}
 	};
 

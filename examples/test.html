@@ -20,12 +20,12 @@
 		$(document).ready(function() {
 			opts.feed = 'Light';
 			$('span#light').swarmField(opts);
-			opts.feed = 'Temperature';
-			$('span#temp').swarmField(opts);
 			opts.feed = 'Button';
 			$('span#button').swarmField(opts);
 			opts.feed = 'Potentiometer';
 			$('span#pot').swarmField(opts);
+			opts.feed = 'Temperature';
+			$('div#temp').swarmChart(opts);
 			opts.feed = 'Acceleration';
 			$('div#accel').swarmChart(opts);
 		});
@@ -34,9 +34,10 @@
 
   <body>
   	Light Data: <span id=light></span></br>
-  	Temperature Data: <span id=temp></span></br>
   	Button Data: <span id=button></span></br>
 	Potentiometer Data: <span id=pot></span></br>
+	Temp Data: </br>
+	<div id=temp></div></br>
 	Accel Data: </br>
   	<div id=accel></div></br>
   </body>
